@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 회원정보 처리 SQL -->
+<!-- 다음으로넘길 인터페이스 위지 적음 -->
+<mapper namespace="dao.TotalParseMapper">
+
+<!-- 게시글 입력,#{}을쓰면 getter를 사용하는 것임 -->
+
+<!-- review 삽입 -->
+<insert id="insertreview" parameterType="reviews">
+		INSERT INTO reviews(reviewNum,id,ageNum,skinNum,text,Score,personDate,productName)
+		VALUES(reviewNum_seq.nextval,#{id},#{ageNum},#{skinNum},#{text},#{Score},SYSDATE,#{productName})
+</insert>
+
+<!-- 웹에서 가져온 리뷰 삽입 -->
+<insert id="insertweb" parameterType="reviews">
+	INSERT INTO reviews(reviewNum,id,ageNum,skinNum,text,Score,personDate,productName)
+	VALUES(reviewNum_seq.nextval,#{id},#{ageNum},#{skinNum},#{text},#{Score},TO_DATE(#{personDate}, 'MM/DD/YYYY'),#{productName})
+</insert>
+
+<!-- 웹에서 가져온 제품 정보 삽입 -->
+<insert id="insertwebpro" parameterType="product">
+	INSERT INTO product(brandName, productName, categoryNum)
+	VALUES(#{brandName}, #{productName}, #{categoryNum})
+</insert>
+
+<!-- 카테고리 선택 후 제품 목록 셀렉트 -->
+<select id="ProductListByCat" resultType="product" parameterType="int">
+	SELECT productName
+	FROM product
+	WHERE categoryNum = #{value}
+</select>
+
+
+<!-- 제품별 평점 --> 
+<select id="proscore" resultType="reviews" parameterType="string">
+	SELECT AVG(score) as score
+	FROM reviews
+	WHERE productName = #{VALUE}
+</select>
+
+<!-- 10대 -->
+<select id="tenage" resultType="reviews" parameterType="string">
+	SELECT NVL(AVG(score), 0) as score
+	FROM reviews
+	WHERE ageNum = 1 AND productName = #{VALUE}
+</select>
+
+<!-- 20대 -->
+<select id="twenage" resultType="reviews" parameterType="string">
+	SELECT NVL(AVG(score), 0) as score
+	FROM reviews
+	WHERE ageNum = 2 AND productName = #{VALUE}
+</select>
+
+<!-- 30대 -->
+<select id="threeage" resultType="reviews" parameterType="string">
+	SELECT NVL(AVG(score), 0) as score
+	FROM reviews
+	WHERE ageNum = 3 AND productName = #{VALUE}
+</select>
+
+<!-- 40대 -->
+<select id="fourage" resultType="reviews" parameterType="string">
+	SELECT NVL(AVG(score), 0) as score
+	FROM reviews
+	WHERE ageNum = 4 AND productName = #{VALUE}
+</select>
+
+<!-- 50대 -->
+<select id="fiveage" resultType="reviews" parameterType="string">
+	SELECT NVL(AVG(score), 0) as score
+	FROM reviews
+	WHERE ageNum = 5 AND productName = #{VALUE}
+</select>
+
+<!-- verydry -->
+<select id="verydry" resultType="reviews" parameterType="string">
+	SELECT NVL(AVG(score), 0) as score
+	FROM reviews
+	WHERE skinNum = 1 AND productName = #{VALUE}
+</select>
+
+<!-- dry -->
+<select id="dry" resultType="reviews" parameterType="string">
+	SELECT NVL(AVG(score), 0) as score
+	FROM reviews
+	WHERE skinNum = 2 AND productName = #{VALUE}
+</select>
+
+<!-- Normal -->
+<select id="normal" resultType="reviews" parameterType="string">
+	SELECT NVL(AVG(score), 0) as score
+	FROM reviews
+	WHERE skinNum = 3 AND productName = #{VALUE}
+</select>
+
+<!-- Combination -->
+<select id="combination" resultType="reviews" parameterType="string">
+	SELECT NVL(AVG(score), 0) as score
+	FROM reviews
+	WHERE skinNum = 4 AND productName = #{VALUE}
+</select>
+
+<!-- Acne-Prone -->
+<select id="acneprone" resultType="reviews" parameterType="string">
+	SELECT NVL(AVG(score), 0) as score
+	FROM reviews
+	WHERE skinNum = 5 AND productName = #{VALUE}
+</select>
+
+<!-- Oliy -->
+<select id="oliy" resultType="reviews" parameterType="string">
+	SELECT NVL(AVG(score), 0) as score
+	FROM reviews
+	WHERE skinNum = 6 AND productName = #{VALUE}
+</select>
+
+<!-- very Oliy -->
+<select id="veryoliy" resultType="reviews" parameterType="string">
+	SELECT NVL(AVG(score), 0) as score
+	FROM reviews
+	WHERE skinNum = 7 AND productName = #{VALUE}
+</select>
+
+<!-- Sensitive -->
+<select id="sensitive" resultType="reviews" parameterType="string">
+	SELECT NVL(AVG(score), 0) as score
+	FROM reviews
+	WHERE skinNum = 8 AND productName = #{VALUE}
+</select>
+
+<!-- other -->
+<select id="other" resultType="reviews" parameterType="string">
+	SELECT NVL(AVG(score), 0) as score
+	FROM reviews
+	WHERE skinNum = 9 AND productName = #{VALUE}
+</select>
+
+<!-- 리뷰 아이디로 검색(id) -->
+<select id="searchbyid" resultType="selectsearchbyid" parameterType="String">
+	SELECT r.reviewNum, c.categoryName, p.brandName, p.productName,
+	r.id, a.ageType, s.skinType, r.text, r.personDate
+	FROM age a, skin s, reviews r, product p, category c
+	WHERE a.ageNum = r.ageNum
+	AND
+	s.skinNum = r.skinNum
+	AND
+	r.productName = p.productName
+	AND
+	c.categoryNum = p.categoryNum
+	AND
+	r.id = #{id}
+	ORDER BY r.reviewNum
+</select>
+
+<!--댓글 수정(num) -->
+<update id="updatebynum" parameterType="reviews">
+	UPDATE reviews
+	SET
+	text = #{text},
+	Score = #{score},
+	personDate = SYSDATE
+	WHERE
+	reviewNum = #{reviewNum}
+</update>
+
+<!--댓글 삭제(id) -->
+<delete id="deletebynum" parameterType="int">
+	DELETE FROM reviews
+	WHERE reviews.reviewNum = #{VALUE}
+</delete>
+
+
+	
+</mapper>
